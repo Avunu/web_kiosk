@@ -1,78 +1,108 @@
-{ config, pkgs, lib, ... }:
-
+{ config
+, lib
+, pkgs
+, modulesPath
+, ...
+}:
+let
+  wifiCredentials = import ./wifi-credentials.nix;
+in
 {
-  # imports = [
-  #   <nixpkgs/nixos/modules/profiles/base.nix>
-  #   <nixpkgs/nixos/modules/installer/sd-card/sd-image.nix>
-  # ];
-
 
   # imports = [
-  #   <nixpkgs/nixos/modules/installer/sd-card/sd-image-x86_64.nix>
+  #   ./disable.nix
   # ];
 
-  # sdImage = {
-  #   populateFirmwareCommands = ''
-  #     # Create the directories required for the EFI System Partition
-  #     mkdir -p ./files/boot/efi
+  boot = {
+    growPartition = true;
+    initrd.availableKernelModules = [ "uas" ];
+    kernelPackages = pkgs.linuxPackages_zen;
+    kernelParams = [ "console=tty0" ];
+    loader = {
+      timeout = lib.mkDefault 0;
+      grub = {
+        device = "nodev";
+        efiSupport = true;
+        efiInstallAsRemovable = true;
+      };
+    };
+  };
 
-  #     # Install systemd-boot into the EFI System Partition
-  #     ${pkgs.systemd}/bin/bootctl --path=./files/boot/efi install
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/nixos";
+    fsType = "ext4";
+    autoResize = true;
+    options = [ "noatime" "data=writeback" "barrier=0" "commit=120" ];
+  };
 
-  #     # Optionally, copy additional required files, like a custom loader.conf or entries
-  #   '';
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-label/ESP";
+    fsType = "vfat";
+    autoResize = false;
+  };
 
-  #   populateRootCommands = ''
-  #     # Place any necessary files on the root partition
-  #   '';
+  system.build.raw = import "${toString modulesPath}/../lib/make-disk-image.nix" {
+    inherit lib config pkgs;
+    partitionTableType = "efi";
+    diskSize = "auto";
+    format = "raw";
+  };
+
+  hardware = {
+    opengl.enable = true;
+    # enableRedistributableFirmware = true;
+  };
+
+  networking = {
+    # enableIntel2200BGFirmware = true;
+    networkmanager.enable = false;
+    useNetworkd = true;
+    wireless = {
+      enable = true;
+      networks = {
+        "${wifiCredentials.wifiNetwork.ssid}".psk = wifiCredentials.wifiNetwork.psk;
+      };
+    };
+  };
+
+  services = {
+    dbus.implementation = "broker";
+    journald.storage = "none";
+    cage = {
+      enable = true;
+      user = "user";
+      program =
+        "${pkgs.cog}/bin/cog https://google.com";
+    };
+    openssh = {
+      enable = true;
+      extraConfig = ''
+        PermitEmptyPasswords yes
+      '';
+    };
+  };
+
+  system = {
+    autoUpgrade = {
+      allowReboot = true;
+      enable = true;
+      rebootWindow = {
+        lower = "01:00";
+        upper = "05:00";
+      };
+    };
+    stateVersion = "23.11";
+  };
+
+  # systemd.services."cage-tty1" = {
+  #   after = [ "dev-dri-card0.device" ];
+  #   wants = [ "dev-dri-card0.device" ];
   # };
 
-  # boot.loader.grub = {
-  #   enable = true;
-  #   efiSupport = true;
-  #   device = "nodev";
-  #   efiInstallAsRemovable = true;
-  # };
-
-  # fileSystems = {
-  #   "/boot" = {
-  #     device = "/dev/disk/by-label/FIRMWARE";
-  #     fsType = "vfat";
-  #   };
-  #   "/" = lib.mkDefault {
-  #     device = "/dev/disk/by-label/NIXOS_SD";
-  #     fsType = "ext4";
-  #     autoResize = true;
-  #   };
-  # };
-
-  # boot.loader.efi.canTouchEfiVariables = true;
-  # boot.loader.generic-extlinux-compatible.enable = false;
-  # boot.loader.grub.enable = false;
-  # boot.loader.systemd-boot.enable = true;
-
-  systemd.services.systemd-journald.enable = false;
-  systemd.services.systemd-journal-flush.enable = false;
-  services.journald.storage = "none";
-  services.rsyslogd.enable = false;
-  services.syslog-ng.enable = false;
-  systemd.coredump.enable = false;
-  systemd.oomd.enable = false;
-  boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
-
-  boot.kernelParams = [ "console=tty0" ];
-  hardware.pulseaudio.enable = false;
-  networking.enableIntel2200BGFirmware = true;
-  networking.wireless.enable = true;
-  networking.wireless.networks."Freedom is Coming".psk = builtins.readFile ./pass.txt;
-  programs.firefox.enable = true;
-  services.pipewire.enable = false;
-  services.xserver.enable = false;
-  system.autoUpgrade.allowReboot = true;
-  system.autoUpgrade.enable = true;
-  system.stateVersion = "23.11";
+  # fonts.enableDefaultPackages = true;
+  # programs.cfs-zen-tweaks.enable = true;
   time.timeZone = "America/New_York";
-  zramSwap.enable = true;
+  # zramSwap.enable = true;
 
   users.users.user = {
     isNormalUser = true;
@@ -81,15 +111,4 @@
     home = "/home/user";
   };
 
-  system.autoUpgrade.rebootWindow = {
-    lower = "01:00";
-    upper = "05:00";
-  };
-
-  services.cage = {
-    enable = true;
-    user = "user";
-    program =
-      "${pkgs.firefox}/bin/firefox -kiosk -private-window https://google.com";
-  };
 }
