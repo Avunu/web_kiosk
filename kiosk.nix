@@ -1,12 +1,4 @@
-{ config
-, lib
-, pkgs
-, modulesPath
-, ...
-}:
-let
-  wifiCredentials = import ./wifi-credentials.nix;
-in
+{ pkgs, wifiCredentials, ... }:
 {
 
   # imports = [
