@@ -28,7 +28,7 @@
         };
       in
       {
-        packages.mobile-nixos-image = mobileNixOSExpr;
+        packages.kiosk-image = mobileNixOSExpr;
       }
     );
 }
