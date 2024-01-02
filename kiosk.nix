@@ -1,11 +1,14 @@
-{ pkgs, wifiCredentials, ... }:
+{ pkgs, system, wifiCredentials, ... }:
 {
 
-  # imports = [
-  #   ./disable.nix
-  # ];
+  imports = [
+    ./disable.nix
+  ];
 
   fileSystems."/" = {
+    device = "/dev/disk/by-label/NIXOS_SYSTEM";
+    fsType = "ext4";
+    autoResize = true;
     options = [ "noatime" "data=writeback" "barrier=0" "commit=120" ];
   };
 

@@ -1,1 +1,0 @@
-nix-build '<nixpkgs/nixos>' -A config.system.build.raw -I nixos-config=./kiosk.nix -o ./result

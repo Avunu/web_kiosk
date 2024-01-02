@@ -1,0 +1,34 @@
+{
+  description = "Web Kiosk based on Mobile NixOS";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    mobile-nixos = {
+      url = "github:NixOS/mobile-nixos";
+      flake = false;
+    };
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, mobile-nixos, flake-utils, ... }:
+    flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        wifiCredentials = import ./wifi-credentials.nix;
+        kioskConfig = import ./kiosk.nix { inherit pkgs system wifiCredentials; };
+        mobileConfig = (import "${mobile-nixos}/lib/eval-with-configuration.nix" {
+          inherit pkgs;
+          device = "uefi-x86_64";
+          configuration = [ kioskConfig ];
+          # Pass the system attribute through additional configuration
+          additionalConfiguration = { nixpkgs.system = system; };
+        }).outputs.default;
+      in
+      {
+        packages = {
+          kiosk-image = mobileConfig;
+        };
+        defaultPackage.x86_64-linux = mobileConfig;
+      }
+    );
+}
