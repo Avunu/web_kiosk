@@ -19,7 +19,7 @@
       defaultPackage.x86_64-linux = pkgs.nixos {
         configuration = { config, pkgs, ... }: {
           imports = [
-            pkgs.path + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+            "${pkgs.path}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
             kioskConfig
             disableConfig
           ];
