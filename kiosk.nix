@@ -45,20 +45,7 @@
     };
   };
 
-  system = {
-    autoUpgrade = {
-      allowReboot = true;
-      channel = "https://nixos.org/channels/nixos-23.11";
-      enable = true;
-      rebootWindow = {
-        lower = "01:00";
-        upper = "05:00";
-      };
-    };
-    stateVersion = "23.11";
-  };
-
-  system.copySystemConfiguration = true;
+  system.stateVersion = "23.11";
 
   # fonts.enableDefaultPackages = true;
   # programs.cfs-zen-tweaks.enable = true;
