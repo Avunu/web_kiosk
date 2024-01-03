@@ -1,10 +1,6 @@
 { pkgs, system, wifiCredentials, ... }:
 {
 
-  imports = [
-    ./disable.nix
-  ];
-
   fileSystems."/" = {
     device = "/dev/disk/by-label/NIXOS_SYSTEM";
     fsType = "ext4";
@@ -13,6 +9,7 @@
   };
 
   networking = {
+    useDHCP = true;
     wireless = {
       enable = true;
       networks = {
@@ -22,14 +19,21 @@
   };
 
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+  hardware.enableRedistributableFirmware = true;
   programs.firefox.enable = true;
 
   services = {
-    # dbus.implementation = "broker";
-    journald.storage = "none";
+    dbus.implementation = "broker";
+    journald.storage = "volatile";
     cage = {
       enable = true;
       user = "user";
+      environment = {
+        "WLR_RENDERER" = "gles2";
+        "WLR_BACKENDS" = "libinput,drm";
+        "WLR_RENDERER_ALLOW_SOFTWARE" = "0";
+        "XCURSOR_PATH" = "/dev/null";
+      };
       program =
         "${pkgs.firefox}/bin/firefox -kiosk -private-window https://google.com";
     };
@@ -44,6 +48,7 @@
   system = {
     autoUpgrade = {
       allowReboot = true;
+      channel = "https://nixos.org/channels/nixos-23.11";
       enable = true;
       rebootWindow = {
         lower = "01:00";
@@ -52,6 +57,8 @@
     };
     stateVersion = "23.11";
   };
+
+  system.copySystemConfiguration = true;
 
   # fonts.enableDefaultPackages = true;
   # programs.cfs-zen-tweaks.enable = true;

@@ -16,11 +16,13 @@ let
 
   wifiCredentials = import ./wifi-credentials.nix;
   kioskConfig = import ./kiosk.nix { inherit pkgs system wifiCredentials; };
+  disableConfig = import ./disable.nix;
+  tmpfsConfig = import ./tmpfs.nix;
 
   kiosk-image = (import "${mobile-nixos}/lib/eval-with-configuration.nix" {
     inherit pkgs;
     device = "uefi-x86_64";
-    configuration = [ kioskConfig ];
+    configuration = [ kioskConfig disableConfig tmpfsConfig ];
   }).outputs.disk-image;
 
 in

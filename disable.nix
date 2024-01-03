@@ -2,7 +2,10 @@
 
 {
   appstream.enable = false;
-  boot.initrd.systemd.enableTpm2 = false;
+  boot.initrd = {
+    services.lvm.enable = false;
+    systemd.enableTpm2 = false;
+  };
   environment.defaultPackages = [ ];
   environment.systemPackages = [ ];
   fonts.fontconfig.enable = false;
@@ -14,11 +17,11 @@
   networking = {
     dhcpcd.enable = false;
     firewall.enable = false;
-    resolvconf.enable = false;
-    # useDHCP = false;
+    useNetworkd = true;
   };
   security = {
     pam.services.su.forwardXAuth = lib.mkForce false;
+    polkit.enable = lib.mkForce false;
     tpm2.applyUdevRules = false;
   };
   services = {
@@ -28,19 +31,19 @@
     pipewire.enable = false;
     rsyslogd.enable = false;
     syslog-ng.enable = false;
-    # udev.enable = false;
+    udev.enable = false;
     udisks2.enable = false;
     # upower.enable = false;
     xserver.enable = false;
   };
+  sound.enable = false;
   system.nssModules = lib.mkForce [ ];
   systemd = {
     coredump.enable = false;
     oomd.enable = false;
-  };
-  systemd.services = {
-    systemd-journal-flush.enable = false;
-    systemd-journald.enable = false;
+    services = {
+      systemd-journal-flush.enable = false;
+    };
   };
   xdg = {
     autostart.enable = false;
