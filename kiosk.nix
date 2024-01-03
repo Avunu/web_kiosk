@@ -1,20 +1,20 @@
-{ pkgs, system, wifiCredentials, ... }:
+{ pkgs, system, ... }:
+let
+  wifiCredentialsPath = ./wifi-credentials.nix;
+  wirelessEnabled = true;
+  wifiNetworks =
+    if wirelessEnabled
+    then
+      let credentials = import wifiCredentialsPath;
+      in { "${credentials.wifiNetwork.ssid}".psk = credentials.wifiNetwork.psk; }
+    else { };
+in
 {
-
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/NIXOS_SYSTEM";
-    fsType = "ext4";
-    autoResize = true;
-    options = [ "noatime" "data=writeback" "barrier=0" "commit=120" ];
-  };
-
   networking = {
     useDHCP = true;
     wireless = {
-      enable = true;
-      networks = {
-        "${wifiCredentials.wifiNetwork.ssid}".psk = wifiCredentials.wifiNetwork.psk;
-      };
+      enable = wirelessEnabled;
+      networks = wifiNetworks;
     };
   };
 
@@ -27,7 +27,7 @@
     journald.storage = "volatile";
     cage = {
       enable = true;
-      user = "user";
+      user = "nixos";
       environment = {
         "WLR_RENDERER" = "gles2";
         "WLR_BACKENDS" = "libinput,drm";
@@ -50,13 +50,6 @@
   # fonts.enableDefaultPackages = true;
   # programs.cfs-zen-tweaks.enable = true;
   time.timeZone = "America/New_York";
-  # zramSwap.enable = true;
-
-  users.users.user = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    initialPassword = "";
-    home = "/home/user";
-  };
+  zramSwap.enable = true;
 
 }
