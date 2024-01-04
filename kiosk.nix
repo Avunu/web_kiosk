@@ -1,16 +1,13 @@
-{ pkgs, system, wifiSSID ? null, wifiPassword ? null, ... }:
+{ pkgs, system, wifiConfig, ... }:
 let
-  wirelessEnabled = wifiSSID != "" && wifiPassword != "";
+  wirelessEnabled = wifiConfig ? wifiSSID && wifiConfig ? wifiPassword && wifiConfig.wifiSSID != "" && wifiConfig.wifiPassword != "";
 
   # Define wireless networks configuration
   wirelessNetworks =
-    if wirelessEnabled && wifiSSID != "" && wifiPassword != "" then
-      { "${wifiSSID}".psk = wifiPassword; }
+    if wirelessEnabled then
+      { "${wifiConfig.wifiSSID}".psk = wifiConfig.wifiPassword; }
     else
       { };
-
-  # Trace for debugging
-  tracedNetworks = pkgs.lib.debug.traceVal wirelessNetworks;
 in
 {
   networking = {
