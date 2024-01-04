@@ -1,20 +1,25 @@
 { pkgs, system, ... }:
 let
-  wifiCredentialsPath = ./wifi-credentials.nix;
-  wirelessEnabled = true;
-  wifiNetworks =
-    if wirelessEnabled
-    then
-      let credentials = import wifiCredentialsPath;
-      in { "${credentials.wifiNetwork.ssid}".psk = credentials.wifiNetwork.psk; }
-    else { };
+  wifiSSID = builtins.getEnv "WIFI_SSID";
+  wifiPassword = builtins.getEnv "WIFI_PASSWORD";
+  wirelessEnabled = wifiSSID != "" && wifiPassword != "";
+
+  # Define wireless networks configuration
+  wirelessNetworks =
+    if wirelessEnabled && wifiSSID != "" && wifiPassword != "" then
+      { "${wifiSSID}".psk = wifiPassword; }
+    else
+      { };
+
+  # Trace for debugging
+  _ = builtins.trace "Configuring WiFi for SSID: ${wifiSSID}" wirelessEnabled;
 in
 {
   networking = {
     useDHCP = true;
     wireless = {
       enable = wirelessEnabled;
-      networks = wifiNetworks;
+      networks = wirelessNetworks;
     };
   };
 

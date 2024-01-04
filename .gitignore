@@ -1,2 +1,4 @@
-wifi-credentials.nix
+.env
+result
 result/
+wifi-credentials.nix
