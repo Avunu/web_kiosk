@@ -1,7 +1,5 @@
-{ pkgs, system, ... }:
+{ pkgs, system, wifiSSID ? null, wifiPassword ? null, ... }:
 let
-  wifiSSID = builtins.getEnv "WIFI_SSID";
-  wifiPassword = builtins.getEnv "WIFI_PASSWORD";
   wirelessEnabled = wifiSSID != "" && wifiPassword != "";
 
   # Define wireless networks configuration
@@ -12,7 +10,7 @@ let
       { };
 
   # Trace for debugging
-  _ = builtins.trace "Configuring WiFi for SSID: ${wifiSSID}" wirelessEnabled;
+  tracedNetworks = pkgs.lib.debug.traceVal wirelessNetworks;
 in
 {
   networking = {
