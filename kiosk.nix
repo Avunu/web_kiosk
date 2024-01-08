@@ -26,7 +26,7 @@ in
   networking.wireless = wirelessConfig;
   programs.firefox.enable = true;
   services.cage.enable = true;
-  services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk -private-window ${startPage}";
+  services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk ${startPage}";
   services.cage.user = "nixos";
   time.timeZone = "America/New_York";
   zramSwap.enable = true;
