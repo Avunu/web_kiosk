@@ -9,6 +9,7 @@
       pkgs = nixpkgs.legacyPackages.${system};
 
       envConfig = import ./build.env.nix;
+      _ = builtins.trace "Loaded envConfig: ${builtins.toJSON envConfig}" { };
       kioskConfig = import ./kiosk.nix { inherit pkgs envConfig; };
       disableConfig = import ./disable.nix;
 

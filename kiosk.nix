@@ -1,8 +1,6 @@
 { pkgs, envConfig, ... }:
 
 let
-  _ = builtins.trace "Loaded envConfig: ${builtins.toJSON envConfig}" {};
-
   # Get environment variables
   startPage = envConfig.startPage;
   wifiSSID = envConfig.wifiNetwork.ssid;
