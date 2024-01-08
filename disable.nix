@@ -8,6 +8,7 @@
       systemd.enableTpm2 = false;
     };
     swraid.enable = lib.mkForce false;
+    zfs.enabled = false;
   };
   environment.defaultPackages = [ ];
   environment.systemPackages = [ ];
@@ -18,7 +19,7 @@
   };
   programs.nano.enable = false;
   networking = {
-    dhcpcd.enable = false;
+    # dhcpcd.enable = false;
     firewall.enable = false;
   };
   security = {
@@ -37,6 +38,7 @@
     udisks2.enable = false;
     # upower.enable = false;
     xserver.enable = false;
+    zfs.trim.enable = false;
   };
   sound.enable = false;
   system = {
