@@ -5,7 +5,7 @@ mv build.env.nix build.env.nix.tmp
 mv env.nix build.env.nix
 
 # build the project
-nix build
+nix build --impure --extra-experimental-features 'nix-command flakes' 
 
 # restore the git ignored variables
 mv build.env.nix env.nix
