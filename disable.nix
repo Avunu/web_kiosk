@@ -40,8 +40,10 @@
     xserver.enable = false;
   };
   sound.enable = false;
-  system.nssModules = lib.mkForce [ ];
-  system.switch.enable = false;
+  system = {
+    nssModules = lib.mkForce [ ];
+    switch.enable = false;
+  };
   systemd = {
     coredump.enable = false;
     oomd.enable = false;

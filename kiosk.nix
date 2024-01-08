@@ -28,7 +28,6 @@ in
   services.cage.enable = true;
   services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk -private-window ${startPage}";
   services.cage.user = "nixos";
-  system.switch.enable = false;
   time.timeZone = "America/New_York";
   zramSwap.enable = true;
 }
