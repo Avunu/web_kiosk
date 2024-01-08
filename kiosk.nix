@@ -22,7 +22,6 @@ in
 {
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   hardware.enableRedistributableFirmware = true;
-  imports = ["${pkgs.path}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"];
   isoImage.squashfsCompression = "lz4";
   networking.wireless = wirelessConfig;
   programs.firefox.enable = true;
