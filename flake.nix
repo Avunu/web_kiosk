@@ -8,7 +8,7 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
 
-      envConfig = import ./local.nix;
+      envConfig = import ./env.nix;
       kioskConfig = import ./kiosk.nix { inherit pkgs envConfig; };
       disableConfig = import ./disable.nix;
 
