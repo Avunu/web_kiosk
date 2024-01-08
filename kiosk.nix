@@ -1,6 +1,8 @@
 { pkgs, envConfig, ... }:
 
 let
+  _ = builtins.trace "Loaded envConfig: ${builtins.toJSON envConfig}" ();
+
   # Get environment variables
   startPage = envConfig.startPage;
   wifiSSID = envConfig.wifiNetwork.ssid;
@@ -28,6 +30,6 @@ in
   services.cage.enable = true;
   services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk ${startPage}";
   services.cage.user = "nixos";
-  time.timeZone = "America/New_York";
+  time.timeZone = envConfig.timeZone;
   zramSwap.enable = true;
 }
