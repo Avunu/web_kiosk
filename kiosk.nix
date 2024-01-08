@@ -12,10 +12,12 @@ let
   # Define wireless networks configuration
   wirelessConfig =
     if wirelessEnabled then
-      {
-        enable = true;
-        networks = { "${wifiSSID}".psk = wifiPassword; };
-      }
+      (
+        {
+          enable = true;
+          networks = { "${wifiSSID}".psk = wifiPassword; };
+        }
+      )
     else
       { };
 in
