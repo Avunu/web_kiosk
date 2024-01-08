@@ -30,17 +30,16 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
    Create a `env.nix` file in the project root with your custom configuration. Use `env.nix.example` as a template:
 
    ```nix
-   # env.nix
-   {
-     startPage = "https://www.google.com";
-     wifiNetwork = {
-         ssid = "YourNetworkSSID";
-         psk = "YourNetworkPassword";
-     };
-   }
+    # env.nix
+    {
+        startPage = "https://www.google.com";
+        timeZone = "America/New_York";
+        wifiSSID = "YourWifiSSID"; # leave empty to disable wifi
+        wifiPassword = "YourWifiPassword";
+    }
    ```
 
-   Make sure to replace `YourWifiSSID`, `YourWifiPassword`, and `https://startpage.com` with your desired Wi-Fi credentials and the startup page URL. If you don't need Wi-Fi, you can replace `YourWifiSSID` and `YourWifiPassword` variables with empty strings.
+   Make sure to replace `https://startpage.com`, `America/New_York`, `YourWifiSSID`, and `YourWifiPassword` with your desired startup page URL, timeZone, and Wi-Fi credentials. If you don't need Wi-Fi, you can replace `YourWifiSSID` and `YourWifiPassword` variables with empty strings.
 
 3. **Build the Kiosk**
 

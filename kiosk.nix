@@ -31,6 +31,7 @@ in
   services.cage.enable = true;
   services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk ${startPage}";
   services.cage.user = "nixos";
+  services.getty.loginProgram = "${pkgs.coreutils}/bin/true";
   time.timeZone = envConfig.timeZone;
   zramSwap.enable = true;
 }
