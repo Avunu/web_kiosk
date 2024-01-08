@@ -2,6 +2,7 @@
 
 # temporarily disable .gitignore so we can feed our env vars to nix
 mv .gitignore .gitignore.disabled
+touch .gitignore
 
 # build the flake
 nix build

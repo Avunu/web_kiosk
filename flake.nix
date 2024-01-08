@@ -27,6 +27,6 @@
 
     in
     {
-      defaultPackage.x86_64-linux = kioskIso.config.system.build.isoImage;
+      packages.x86_64-linux.default = kioskIso.config.system.build.isoImage;
     };
 }
