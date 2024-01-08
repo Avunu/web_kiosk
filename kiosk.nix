@@ -7,7 +7,7 @@ let
   wifiPassword = envConfig.wifiPassword;
 
   # Check if WiFi credentials are provided
-  wirelessEnabled = wifiSSID != "" && wifiPassword != "";
+  wirelessEnabled = wifiSSID != "";
 
   # Define wireless networks configuration
   wirelessConfig =
@@ -19,13 +19,13 @@ let
     else
       {
         enable = false;
-        networks = { };
       };
 in
 {
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   hardware.enableRedistributableFirmware = true;
-  isoImage.squashfsCompression = "lz4";
+  isoImage.squashfsCompression = "xz";
+  networking.useNetworkd = true;
   networking.wireless = wirelessConfig;
   programs.firefox.enable = true;
   services.cage.enable = true;

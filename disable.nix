@@ -20,7 +20,6 @@
   networking = {
     dhcpcd.enable = false;
     firewall.enable = false;
-    useNetworkd = true;
   };
   security = {
     pam.services.su.forwardXAuth = lib.mkForce false;
@@ -34,7 +33,7 @@
     pipewire.enable = false;
     rsyslogd.enable = false;
     syslog-ng.enable = false;
-    udev.enable = false;
+    # udev.enable = false;
     udisks2.enable = false;
     # upower.enable = false;
     xserver.enable = false;
