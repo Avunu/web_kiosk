@@ -7,16 +7,17 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      lib = pkgs.lib;
 
       envConfig = import ./build.env.nix;
-      kioskConfig = import ./kiosk.nix { inherit pkgs envConfig; };
+      kioskConfig = import ./kiosk.nix { inherit lib pkgs envConfig; };
       disableConfig = import ./disable.nix;
 
       nixosConfig = {
         imports = [
           kioskConfig
           disableConfig
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"
         ];
       };
 

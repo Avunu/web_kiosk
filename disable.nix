@@ -8,7 +8,6 @@
       systemd.enableTpm2 = false;
     };
     swraid.enable = lib.mkForce false;
-    zfs.enabled = false;
   };
   environment.defaultPackages = [ ];
   environment.systemPackages = [ ];
@@ -30,7 +29,7 @@
   services = {
     logrotate.enable = lib.mkForce false;
     lvm.enable = false;
-    nscd.enable = false;
+    # nscd.enable = false;
     pipewire.enable = false;
     rsyslogd.enable = false;
     syslog-ng.enable = false;
@@ -38,7 +37,7 @@
     udisks2.enable = false;
     # upower.enable = false;
     xserver.enable = false;
-    zfs.trim.enable = false;
+    zfs.trim.enable = lib.mkForce false;
   };
   sound.enable = false;
   system = {
