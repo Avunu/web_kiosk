@@ -12,12 +12,9 @@ let
   # Define wireless networks configuration
   wirelessConfig =
     if wirelessEnabled then
-      (
-        {
-          enable = true;
-          networks = { "${wifiSSID}".psk = wifiPassword; };
-        }
-      )
+      {
+        networks = { "${wifiSSID}".psk = wifiPassword; };
+      }
     else
       { };
 in
@@ -25,7 +22,8 @@ in
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   hardware.enableRedistributableFirmware = true;
   isoImage.squashfsCompression = "lz4";
-  networking.wireless = wirelessConfig;
+  networking.wireless.enable = wirelessEnabled;
+  networking.wireless.networks = wirelessConfig.networks;
   programs.firefox.enable = true;
   services.cage.enable = true;
   services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk ${startPage}";
