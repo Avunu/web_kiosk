@@ -3,8 +3,8 @@
 let
   # Get environment variables
   startPage = envConfig.startPage;
-  wifiSSID = envConfig.wifiNetwork.ssid;
-  wifiPassword = envConfig.wifiNetwork.psk;
+  wifiSSID = envConfig.wifiSSID;
+  wifiPassword = envConfig.wifiPassword;
 
   # Check if WiFi credentials are provided
   wirelessEnabled = wifiSSID != "" && wifiPassword != "";
@@ -13,17 +13,20 @@ let
   wirelessConfig =
     if wirelessEnabled then
       {
+        enable = true;
         networks = { "${wifiSSID}".psk = wifiPassword; };
       }
     else
-      { };
+      {
+        enable = false;
+        networks = { };
+      };
 in
 {
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   hardware.enableRedistributableFirmware = true;
   isoImage.squashfsCompression = "lz4";
-  networking.wireless.enable = wirelessEnabled;
-  networking.wireless.networks = wirelessConfig.networks;
+  networking.wireless = wirelessConfig;
   programs.firefox.enable = true;
   services.cage.enable = true;
   services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk ${startPage}";
