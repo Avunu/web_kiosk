@@ -1,55 +1,38 @@
-{ pkgs, system, wifiConfig, ... }:
+{ pkgs, envConfig, ... }:
+
 let
-  wirelessEnabled = wifiConfig ? wifiSSID && wifiConfig ? wifiPassword && wifiConfig.wifiSSID != "" && wifiConfig.wifiPassword != "";
+  # Get environment variables
+  startPage = envConfig.startPage;
+  wifiSSID = envConfig.wifiNetwork.ssid;
+  wifiPassword = envConfig.wifiNetwork.psk;
+
+  # Check if WiFi credentials are provided
+  wirelessEnabled = wifiSSID != "" && wifiPassword != "";
 
   # Define wireless networks configuration
-  wirelessNetworks =
+  wirelessConfig =
     if wirelessEnabled then
-      { "${wifiConfig.wifiSSID}".psk = wifiConfig.wifiPassword; }
+      {
+        enable = true;
+        networks = { "${wifiSSID}".psk = wifiPassword; };
+      }
     else
       { };
 in
 {
-  networking = {
-    useDHCP = true;
-    wireless = {
-      enable = wirelessEnabled;
-      networks = wirelessNetworks;
-    };
-  };
-
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   hardware.enableRedistributableFirmware = true;
+  imports = [
+    "${pkgs.path}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+    ./disable.nix
+  ];
+  isoImage.squashfsCompression = "lz4";
+  networking.wireless = wirelessConfig;
   programs.firefox.enable = true;
-
-  services = {
-    dbus.implementation = "broker";
-    journald.storage = "volatile";
-    cage = {
-      enable = true;
-      user = "nixos";
-      environment = {
-        "WLR_RENDERER" = "gles2";
-        "WLR_BACKENDS" = "libinput,drm";
-        "WLR_RENDERER_ALLOW_SOFTWARE" = "0";
-        "XCURSOR_PATH" = "/dev/null";
-      };
-      program =
-        "${pkgs.firefox}/bin/firefox -kiosk -private-window https://google.com";
-    };
-    openssh = {
-      enable = true;
-      extraConfig = ''
-        PermitEmptyPasswords yes
-      '';
-    };
-  };
-
-  system.stateVersion = "23.11";
-
-  # fonts.enableDefaultPackages = true;
-  # programs.cfs-zen-tweaks.enable = true;
+  services.cage.enable = true;
+  services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk -private-window ${startPage}";
+  services.cage.user = "nixos";
+  system.switch.enable = false;
   time.timeZone = "America/New_York";
   zramSwap.enable = true;
-
 }
