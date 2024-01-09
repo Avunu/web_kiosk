@@ -20,14 +20,17 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
 - **Experimental**: This project is still in its early stages. Expect bugs and breaking changes.
 - **Firefox**: The kiosk is currently limited to Firefox. Support for other browsers may be added in the future.
 - **Hardware**: The kiosk is currently limited to x86_64 hardware. Support for other architectures may be added in the future.
-- **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require an flake update rebuild. This may change in the future. (PRs welcome!)
+- **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require an flake update rebuild. This may change in the future.
+- **Quirky**: This flake-based project uses a non-standard method for secrets management (see build.sh). This may change in the future.
+
+PRs welcome to address any of these caveats!
 
 ## Getting Started
 
 ### Prerequisites
 
 - Nix package manager installed. Visit [NixOS download page](https://nixos.org/download.html) for installation instructions.
-- Basic understanding of Nix and Unix-like environments.
+- Basic understanding of Unix-like environments.
 
 ### Setup
 
