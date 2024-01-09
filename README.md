@@ -20,8 +20,9 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
 - **Experimental**: This project is still in its early stages. Expect bugs and breaking changes.
 - **Firefox**: The kiosk is currently limited to Firefox. Support for other browsers may be added in the future.
 - **Hardware**: The kiosk is currently limited to x86_64 hardware. Support for other architectures may be added in the future.
-- **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require an flake update rebuild. This may change in the future.
+- **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require an flake update, rebuild, and redeployment. This may change in the future.
 - **Quirky**: This flake-based project uses a non-standard method for secrets management (see build.sh). This may change in the future.
+- **Bloated**: Although every attempt has been made at minimalism, the resulting ISO image is still quite large for what it does (~1.6GB). More work is needed to reduce the image size.
 
 PRs welcome to address any of these caveats!
 
