@@ -21,6 +21,13 @@
     # dhcpcd.enable = false;
     firewall.enable = false;
   };
+  nixpkgs.overlays = [
+    (final: super: {
+      zfs = super.zfs.overrideAttrs (_: {
+        meta.platforms = [ ];
+      });
+    })
+  ];
   security = {
     pam.services.su.forwardXAuth = lib.mkForce false;
     # polkit.enable = lib.mkForce false;
