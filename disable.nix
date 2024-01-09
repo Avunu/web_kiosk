@@ -24,12 +24,14 @@
   security = {
     pam.services.su.forwardXAuth = lib.mkForce false;
     # polkit.enable = lib.mkForce false;
+    sudo.enable = lib.mkForce false;
     tpm2.applyUdevRules = false;
   };
   services = {
     logrotate.enable = lib.mkForce false;
     lvm.enable = false;
     # nscd.enable = false;
+    openssh.enable = lib.mkForce false;
     pipewire.enable = false;
     rsyslogd.enable = false;
     syslog-ng.enable = false;
@@ -41,6 +43,7 @@
   };
   sound.enable = false;
   system = {
+    extraDependencies = lib.mkForce [ ];
     nssModules = lib.mkForce [ ];
     switch.enable = false;
   };

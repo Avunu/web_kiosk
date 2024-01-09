@@ -2,8 +2,11 @@
 
 {
   boot.initrd.systemd.network.wait-online.enable = true;
-  # boot.kernelPackages = pkgs.linuxKernm el.packages.linux_zen;
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   hardware.enableRedistributableFirmware = true;
+  isoImage.isoName = "kiosk.iso";
+  isoImage.makeEfiBootable = true;
+  isoImage.makeUsbBootable = true;
   isoImage.squashfsCompression = "xz";
   networking.useNetworkd = true;
   networking.wireless = lib.optionalAttrs (envConfig.wifiSSID != "") {
@@ -13,9 +16,11 @@
   programs.firefox.enable = true;
   services.cage.enable = true;
   services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk ${envConfig.startPage}";
-  services.cage.user = "nixos";
+  services.cage.user = "kiosk";
+  services.getty.loginProgram = "${pkgs.coreutils}/bin/true";
+  system.stateVersion = "23.11";
   systemd.network.enable = true;
-  # services.getty.loginProgram = "${pkgs.coreutils}/bin/true";
   time.timeZone = envConfig.timeZone;
+  users.users.kiosk.isNormalUser = true;
   zramSwap.enable = true;
 }

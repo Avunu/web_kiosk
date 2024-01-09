@@ -17,7 +17,7 @@
         imports = [
           kioskConfig
           disableConfig
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal-new-kernel-no-zfs.nix"
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/iso-image.nix"
         ];
       };
 
