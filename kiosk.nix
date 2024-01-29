@@ -14,6 +14,7 @@
     networks."${envConfig.wifiSSID}".psk = envConfig.wifiPassword;
   };
   programs.firefox.enable = true;
+  programs.light.enable = true;
   services.cage.enable = true;
   services.cage.program = "${pkgs.firefox}/bin/firefox -kiosk ${envConfig.startPage}";
   services.cage.user = "kiosk";
@@ -23,4 +24,16 @@
   time.timeZone = envConfig.timeZone;
   users.users.kiosk.isNormalUser = true;
   zramSwap.enable = true;
+
+  # Set screen brightness to maximum
+  systemd.user.services.setMaxBrightness = {
+    description = "Set Maximum Screen Brightness";
+    serviceConfig.PassEnvironment = "DISPLAY";
+    script = ''
+      #!${pkgs.stdenv.shell}
+      ${pkgs.light}/bin/light -S 100
+    '';
+    wantedBy = [ "basic.target" ];
+    enabled = true;
+  };
 }
