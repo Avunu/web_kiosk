@@ -26,14 +26,13 @@
   zramSwap.enable = true;
 
   # Set screen brightness to maximum
-  systemd.user.services.setMaxBrightness = {
+  systemd.user.services.brightness = {
+    enable = true;
     description = "Set Maximum Screen Brightness";
-    serviceConfig.PassEnvironment = "DISPLAY";
-    script = ''
-      #!${pkgs.stdenv.shell}
-      ${pkgs.light}/bin/light -S 100
-    '';
-    wantedBy = [ "basic.target" ];
-    enabled = true;
+    serviceConfig = {
+      PassEnvironment = "DISPLAY";
+      ExecStart = "${pkgs.light}/bin/light -S 100";
+    };
+    wantedBy = [ "graphical.target" ];
   };
 }
