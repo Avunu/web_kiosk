@@ -5,9 +5,6 @@
   boot.initrd.systemd.network.wait-online.enable = true;
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   hardware.enableRedistributableFirmware = true;
-  isoImage.isoName = "kiosk.iso";
-  isoImage.makeEfiBootable = true;
-  isoImage.makeUsbBootable = true;
   isoImage.squashfsCompression = "xz";
   networking.useNetworkd = true;
   networking.wireless = lib.optionalAttrs (envConfig.wifiSSID != "") {

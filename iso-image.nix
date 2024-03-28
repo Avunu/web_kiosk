@@ -1,68 +1,51 @@
-{ config, lib, pkgs, ... }:
+{ pkgs }:
 
-with lib;
+let
+  # Define the kernel; you might adjust this based on the specific kernel version you want.
+  kernel = pkgs.linuxPackages_latest.kernel;
 
-{
-  options = {
-
-    isoImage.isoName = mkOption {
-      default = "nixos-minimal.iso";
-      type = types.str;
-      description = "Name of the generated ISO image file.";
-    };
-
-    isoImage.volumeID = mkOption {
-      default = "NIXOS_ISO";
-      type = types.str;
-      description = "Specifies the label or volume ID of the generated ISO image.";
-    };
-
-    isoImage.makeEfiBootable = mkOption {
-      default = true;
-      type = types.bool;
-      description = "Whether the ISO image should be an EFI-bootable volume.";
-    };
-
-    isoImage.contents = mkOption {
-      default = [];
-      description = "This option lists files to be copied to fixed locations in the generated ISO image.";
-    };
-
-    isoImage.storeContents = mkOption {
-      default = [ config.system.build.toplevel ];
-      description = "This option lists additional derivations to be included in the Nix store in the generated ISO image.";
-    };
-
+  # Construct the initrd with a set of modules common for booting.
+  initrd = pkgs.linuxPackages_latest.kernel.makeInitrd {
+    # The following modules are a general suggestion and might need adjustments.
+    contents = [
+      pkgs.e2fsprogs # For ext4 support.
+      pkgs.v86d # Needed for uvesafb support if using framebuffer.
+    ];
+    # Include essential kernel modules for disk support, filesystems, etc.
+    kernelModules = [
+      "isofs" # For ISO 9660 filesystems.
+      "squashfs" # For compressed filesystems, important for live environments.
+      "overlay" # For overlay filesystems, used in live environments.
+      "sr_mod" # For optical drives (CD/DVD).
+    ];
   };
 
-  config = {
-    assertions = [
-      {
-        assertion = config.isoImage.makeEfiBootable;
-        message = "EFI boot is required for a minimal bootable ISO.";
-      }
-    ];
+  # Minimal set of store contents. Typically includes at least the system closure.
+  storeContents = [ kernel initrd ];
 
-    boot.kernelParams = [ "loglevel=4" ];
+  # Minimal ISO contents, required for booting. Adjust as necessary.
+  isoContents = [
+    { source = kernel + "/bzImage";
+      target = "/boot/bzImage";
+    }
+    { source = initrd;
+      target = "/boot/initrd";
+    }
+  ];
 
-    isoImage.contents = [
-      { source = config.boot.kernelPackages.kernel + "/" + config.system.boot.loader.kernelFile;
-        target = "/boot/" + config.system.boot.loader.kernelFile;
-      }
-      { source = config.system.build.initialRamdisk + "/" + config.system.boot.loader.initrdFile;
-        target = "/boot/" + config.system.boot.loader.initrdFile;
-      }
-    ];
-
-    boot.loader.grub.enable = false;
-    boot.loader.efi.canTouchEfiVariables = false;
-
-    system.build.isoImage = pkgs.callPackage ../../../lib/make-iso9660-image.nix {
-      inherit (config.isoImage) isoName volumeID contents;
-      bootable = true;
-      efiBootable = true;
-      efiBootImage = "boot/efi.img";
-      squashfsContents = config.isoImage.storeContents;
-    };
-  };
+in pkgs.callPackage <nixpkgs/lib/make-iso9660-image.nix> {
+  inherit isoContents storeContents;
+  
+  # Configuration for the ISO image.
+  isoName = "kiosk.iso";
+  volumeID = "KIOSK";
+  
+  # Bootable configuration for both BIOS and EFI.
+  bootable = true; # For BIOS
+  efiBootable = true; # For EFI
+  efiBootImage = "boot/efi.img";
+  usbBootable = true; # For USB
+  
+  # Include syslinux for BIOS booting.
+  syslinux = pkgs.syslinux;
 }
