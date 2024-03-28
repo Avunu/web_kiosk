@@ -12,12 +12,13 @@
       envConfig = import ./build.env.nix;
       kioskConfig = import ./kiosk.nix { inherit lib pkgs envConfig; };
       disableConfig = import ./disable.nix;
+      isoImage = import ./iso-image.nix { inherit lib pkgs; };
 
       nixosConfig = {
         imports = [
           kioskConfig
           disableConfig
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/iso-image.nix"
+          isoImage
         ];
         disabledModules =
           [
