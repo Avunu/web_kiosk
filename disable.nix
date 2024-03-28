@@ -7,9 +7,14 @@
       services.lvm.enable = false;
       systemd.enableTpm2 = false;
       includeDefaultModules = false;
-      kernelModules = [ "squashfs" ... ];
     };
     swraid.enable = lib.mkForce false;
+  };
+  documentation = {
+    doc.enable = false;
+    info.enable = false;
+    man.enable = false;
+    nixos.enable = false;
   };
   environment = {
     defaultPackages = [ ];

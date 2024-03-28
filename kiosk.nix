@@ -1,6 +1,7 @@
 { lib, pkgs, envConfig, ... }:
 
 {
+  boot.initrd.kernelModules = [ "squashfs" ];
   boot.initrd.systemd.network.wait-online.enable = true;
   boot.kernelPackages = pkgs.linuxKernel.packages.linux_zen;
   hardware.enableRedistributableFirmware = true;
