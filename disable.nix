@@ -6,11 +6,15 @@
     initrd = {
       services.lvm.enable = false;
       systemd.enableTpm2 = false;
+      includeDefaultModules = false;
+      kernelModules = [ "squashfs" ... ];
     };
     swraid.enable = lib.mkForce false;
   };
-  environment.defaultPackages = [ ];
-  environment.systemPackages = [ ];
+  environment = {
+    defaultPackages = [ ];
+    systemPackages = [ ];
+  };
   fonts.fontconfig.enable = false;
   hardware = {
     bluetooth.enable = false;

@@ -19,6 +19,11 @@
           disableConfig
           "${nixpkgs}/nixos/modules/installer/cd-dvd/iso-image.nix"
         ];
+        disabledModules =
+          [
+            <nixpkgs/nixos/modules/profiles/all-hardware.nix>
+            <nixpkgs/nixos/modules/profiles/base.nix>
+          ];
       };
 
       kioskIso = nixpkgs.lib.nixosSystem {
