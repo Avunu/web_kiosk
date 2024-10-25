@@ -1,51 +1,61 @@
-{ pkgs }:
+{ config, lib, pkgs, ... }:
 
-let
-  # Define the kernel; you might adjust this based on the specific kernel version you want.
-  kernel = pkgs.linuxPackages_latest.kernel;
+{
+  imports = [ ];
 
-  # Construct the initrd with a set of modules common for booting.
-  initrd = pkgs.linuxPackages_latest.kernel.makeInitrd {
-    # The following modules are a general suggestion and might need adjustments.
-    contents = [
-      pkgs.e2fsprogs # For ext4 support.
-      pkgs.v86d # Needed for uvesafb support if using framebuffer.
-    ];
-    # Include essential kernel modules for disk support, filesystems, etc.
-    kernelModules = [
-      "isofs" # For ISO 9660 filesystems.
-      "squashfs" # For compressed filesystems, important for live environments.
-      "overlay" # For overlay filesystems, used in live environments.
-      "sr_mod" # For optical drives (CD/DVD).
-    ];
+  boot = {
+    initrd.availableKernelModules = [ "isofs" "squashfs" "overlay" ];
+    kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  # Minimal set of store contents. Typically includes at least the system closure.
-  storeContents = [ kernel initrd ];
+  system.build = {
+    isoImage = pkgs.callPackage "${pkgs.path}/nixos/lib/make-iso9660-image.nix" {
+      contents = [
+        {
+          source = "${config.boot.kernelPackages.kernel}/bzImage";
+          target = "/boot/bzImage";
+        }
+        {
+          source = "${config.system.build.initialRamdisk}/initrd";
+          target = "/boot/initrd";
+        }
+        {
+          source = "${pkgs.syslinux}/share/syslinux/isolinux.bin";
+          target = "/boot/isolinux.bin";
+        }
+        {
+          source = "${pkgs.syslinux}/share/syslinux/isohdpfx.bin";
+          target = "/boot/isohdpfx.bin";
+        }
+      ];
 
-  # Minimal ISO contents, required for booting. Adjust as necessary.
-  isoContents = [
-    { source = kernel + "/bzImage";
-      target = "/boot/bzImage";
-    }
-    { source = initrd;
-      target = "/boot/initrd";
-    }
-  ];
+      storeContents = [
+        {
+          object = config.boot.kernelPackages.kernel;
+          symlink = "/kernel";
+        }
+        {
+          object = config.system.build.initialRamdisk;
+          symlink = "/initrd";
+        }
+        {
+          object = config.system.build.toplevel;
+          symlink = "/system";
+        }
+      ];
 
-in pkgs.callPackage <nixpkgs/lib/make-iso9660-image.nix> {
-  inherit isoContents storeContents;
-  
-  # Configuration for the ISO image.
-  isoName = "kiosk.iso";
-  volumeID = "KIOSK";
-  
-  # Bootable configuration for both BIOS and EFI.
-  bootable = true; # For BIOS
-  efiBootable = true; # For EFI
-  efiBootImage = "boot/efi.img";
-  usbBootable = true; # For USB
-  
-  # Include syslinux for BIOS booting.
-  syslinux = pkgs.syslinux;
+      isoName = "kiosk.iso";
+      volumeID = "KIOSK";
+      squashfsCompression = "xz";
+
+      bootable = true;
+      bootImage = "/boot/isolinux.bin";
+      efiBootable = true;
+      efiBootImage = "boot/efi.img";
+      isohybridMbrImage = "/boot/isohdpfx.bin";
+      usbBootable = true;
+
+      syslinux = pkgs.syslinux;
+    };
+  };
 }

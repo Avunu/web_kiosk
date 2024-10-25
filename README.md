@@ -21,7 +21,6 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
 - **Firefox**: The kiosk is currently limited to Firefox. Support for other browsers may be added in the future.
 - **Hardware**: The kiosk is currently limited to x86_64 hardware. Support for other architectures may be added in the future.
 - **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require an flake update, rebuild, and redeployment. This may change in the future.
-- **Quirky**: This flake-based project uses a non-standard method for secrets management (see build.sh). This may change in the future.
 - **Bloated**: Although every attempt has been made at minimalism, the resulting ISO image is still quite large for what it does (~1.6GB). More work is needed to reduce the image size.
 
 PRs welcome to address any of these caveats!
@@ -44,16 +43,14 @@ PRs welcome to address any of these caveats!
 
 2. **Configure Environment Variables**
 
-   Create a `env.nix` file in the project root with your custom configuration. Use `env.nix.example` as a template:
+   Create a `.env` file in the project root with your custom configuration. Use `.env.example` as a template:
 
-   ```nix
-    # env.nix
-    {
-        startPage = "https://www.google.com";
-        timeZone = "America/New_York";
-        wifiSSID = "YourWifiSSID"; # leave empty to disable wifi
-        wifiPassword = "YourWifiPassword";
-    }
+   ```
+   # .env
+   startPage=https://www.google.com
+   timeZone=America/New_York
+   wifiSSID=YourWifiSSID
+   wifiPassword=YourWifiPassword
    ```
 
    Make sure to replace `https://startpage.com`, `America/New_York`, `YourWifiSSID`, and `YourWifiPassword` with your desired startup page URL, timeZone, and Wi-Fi credentials. If you don't need Wi-Fi, you can replace `YourWifiSSID` and `YourWifiPassword` variables with empty strings.

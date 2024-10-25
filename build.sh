@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 
-# copy the git ignored variables to the build environment
-mv build.env.nix build.env.nix.tmp
-mv env.nix build.env.nix
+if [ ! -f .env ]; then
+	echo ".env file not found!"
+	exit 1
+fi
+
+source .env
 
 # build the project
 nix build --impure --experimental-features 'nix-command flakes'
-
-# restore the git ignored variables
-mv build.env.nix env.nix
-mv build.env.nix.tmp build.env.nix
