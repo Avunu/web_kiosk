@@ -7,6 +7,8 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
 - **Cage**: A Wayland-based kiosk environment that runs Firefox in kiosk-mode, providing a dedicated full-screen browsing experience.
 - **Firefox**: The popular web browser that provides a secure and performant browsing experience.
 - **NixOS**: A purely functional Linux distribution that provides declarative configuration and reliable system management.
+- **F2FS**: Flash-Friendly File System optimized for USB drives and SSDs with compression support.
+- **Disko**: Declarative disk partitioning for reproducible disk images.
 
 ## Benefits
 
@@ -14,15 +16,13 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
 - **Customizable**: Easily configure network settings and the startup page.
 - **Reproducible Builds**: Leverage the power of Nix to ensure consistent and reproducible builds across different machines.
 - **Minimalistic**: Only essential components are included, ensuring a lightweight and focused browsing experience.
+- **Flash-Optimized**: F2FS with ZSTD compression reduces writes and extends storage life.
 
 ## Caveats
 
-- **Experimental**: This project is still in its early stages. Expect bugs and breaking changes.
-- **Firefox**: The kiosk is currently limited to Firefox. Support for other browsers may be added in the future.
 - **Hardware**: The kiosk is currently limited to x86_64 hardware. Support for other architectures may be added in the future.
-- **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require an flake update, rebuild, and redeployment. This may change in the future.
+- **Static**: The OS is persistent but non-upgradable in place. Software updates require a flake update, rebuild, and redeployment.
 - **Quirky**: This flake-based project uses a non-standard method for secrets management (see build.sh). This may change in the future.
-- **Bloated**: Although every attempt has been made at minimalism, the resulting ISO image is still quite large for what it does (~1.6GB). More work is needed to reduce the image size.
 
 PRs welcome to address any of these caveats!
 
@@ -32,6 +32,7 @@ PRs welcome to address any of these caveats!
 
 - Nix package manager installed. Visit [NixOS download page](https://nixos.org/download.html) for installation instructions.
 - Basic understanding of Unix-like environments.
+- Root/sudo access for building and flashing the disk image.
 
 ### Setup
 
@@ -44,21 +45,25 @@ PRs welcome to address any of these caveats!
 
 2. **Configure Environment Variables**
 
-   Create a `env.nix` file in the project root with your custom configuration. Use `env.nix.example` as a template:
+   Copy the example environment file and customize it:
 
-   ```nix
-    # env.nix
-    {
-        startPage = "https://www.google.com";
-        timeZone = "America/New_York";
-        wifiSSID = "YourWifiSSID"; # leave empty to disable wifi
-        wifiPassword = "YourWifiPassword";
-    }
+   ```bash
+   cp .env.example .env
    ```
 
-   Make sure to replace `https://startpage.com`, `America/New_York`, `YourWifiSSID`, and `YourWifiPassword` with your desired startup page URL, timeZone, and Wi-Fi credentials. If you don't need Wi-Fi, you can replace `YourWifiSSID` and `YourWifiPassword` variables with empty strings.
+   Edit `.env` with your settings:
 
-3. **Build the Kiosk**
+   ```bash
+   # Required settings
+   KIOSK_START_PAGE="https://www.google.com"
+   KIOSK_TIMEZONE="America/New_York"
+
+   # Optional WiFi (leave empty to disable)
+   KIOSK_WIFI_SSID=""
+   KIOSK_WIFI_PASSWORD=""
+   ```
+
+3. **Build the Disk Image**
 
    Run the build script to create your NixOS-based web kiosk:
 
@@ -66,22 +71,45 @@ PRs welcome to address any of these caveats!
    ./build.sh
    ```
 
-   This will generate an ISO image that you can use to boot your kiosk system. The image will be located in the `result/iso/` directory.
+   Then run the generated script to create the disk image:
+
+   ```bash
+   sudo ./result --build-memory 2048
+   ```
+
+   This will generate a compressed disk image `web-kiosk.raw.zst` in the current directory.
 
 ### Deployment
 
 To deploy the kiosk:
 
-- Burn the generated ISO image onto a USB drive or a CD.
-- Boot the target device from this USB drive or CD.
-- The kiosk will automatically connect to the specified Wi-Fi network and open Firefox to the defined start page.
+1. **Flash the image to a USB drive:**
+
+   ```bash
+   zstd -d web-kiosk.raw.zst -o - | sudo dd of=/dev/sdX bs=4M status=progress
+   ```
+
+   Replace `/dev/sdX` with your USB drive device (use `lsblk` to find it).
+
+2. **Boot the target device** from this USB drive.
+
+3. The kiosk will automatically connect to the specified Wi-Fi network and open Firefox to the defined start page.
 
 ## Customization
 
-You can further customize the kiosk by editing `kiosk.nix` and `disable.nix` files:
+You can further customize the kiosk by editing the configuration files:
 
 - `kiosk.nix`: Define the kiosk's behavior, appearance, and additional settings.
 - `disable.nix`: Adjust disabled features or services to suit your security or performance needs.
+- `disko-config.nix`: Customize disk partitioning, image size, and filesystem options.
+
+### Adjusting Image Size
+
+Edit `disko-config.nix` and change the `imageSize` value:
+
+```nix
+imageSize = "8G";  # Increase for more storage
+```
 
 ## Contributing
 

@@ -1,3 +1,5 @@
-env.nix
+.env
 result
 result/*
+*.raw
+*.raw.zst
