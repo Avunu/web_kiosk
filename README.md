@@ -17,11 +17,8 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
 
 ## Caveats
 
-- **Experimental**: This project is still in its early stages. Expect bugs and breaking changes.
-- **Firefox**: The kiosk is currently limited to Firefox. Support for other browsers may be added in the future.
 - **Hardware**: The kiosk is currently limited to x86_64 hardware. Support for other architectures may be added in the future.
 - **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require a flake update, rebuild, and redeployment. This may change in the future.
-- **Quirky**: This flake-based project uses a non-standard method for secrets management (see `build.sh`). This may change in the future.
 - **Bloated**: Although every attempt has been made at minimalism, the resulting ISO image is still quite large for what it does (~1.6GB). More work is needed to reduce the image size.
 
 PRs welcome to address any of these caveats!
@@ -30,7 +27,8 @@ PRs welcome to address any of these caveats!
 
 ### Prerequisites
 
-- Nix package manager installed. Visit [NixOS download page](https://nixos.org/download.html) for installation instructions.
+- Nix package manager with flakes enabled. Visit [NixOS download page](https://nixos.org/download.html) for installation instructions.
+- [devenv](https://devenv.sh/) for the development shell (provides `.env` loading).
 - Basic understanding of Unix-like environments.
 
 ### Setup
@@ -44,26 +42,29 @@ PRs welcome to address any of these caveats!
 
 2. **Configure Environment Variables**
 
-   Create a `env.nix` file in the project root with your custom configuration. Use `env.nix.example` as a template:
-
-   ```nix
-    # env.nix
-    {
-        startPage = "https://www.google.com";
-        timeZone = "America/New_York";
-        wifiSSID = "YourWifiSSID"; # leave empty to disable wifi
-        wifiPassword = "YourWifiPassword";
-    }
-   ```
-
-   Make sure to replace `https://startpage.com`, `America/New_York`, `YourWifiSSID`, and `YourWifiPassword` with your desired startup page URL, timeZone, and Wi-Fi credentials. If you don't need Wi-Fi, you can replace `YourWifiSSID` and `YourWifiPassword` variables with empty strings.
-
-3. **Build the Kiosk**
-
-   Run the build script to create your NixOS-based web kiosk:
+   Create a `.env` file in the project root with your custom configuration. Use `.env.example` as a template:
 
    ```bash
-   ./build.sh
+   START_PAGE=https://www.google.com
+   TIME_ZONE=America/New_York
+   WIFI_SSID=YourWifiSSID
+   WIFI_PASSWORD=YourWifiPassword
+   ```
+
+   Set `WIFI_SSID` and `WIFI_PASSWORD` to empty strings to disable Wi-Fi.
+
+3. **Enter the Development Shell**
+
+   ```bash
+   devenv shell
+   ```
+
+   This activates the devenv shell which loads `.env` variables into the environment.
+
+4. **Build the Kiosk**
+
+   ```bash
+   build-image
    ```
 
    This will generate an ISO image that you can use to boot your kiosk system. The image will be located in the `result/iso/` directory.
