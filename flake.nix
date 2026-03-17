@@ -61,7 +61,7 @@
                     ];
 
                     # ISO image
-                    image.baseName = "kiosk";
+                    image.baseName = lib.mkForce "kiosk";
                     isoImage = {
                       volumeID = "KIOSK";
                       squashfsCompression = "xz";
@@ -81,11 +81,20 @@
                         includeDefaultModules = false;
                         services.lvm.enable = false;
                         systemd = {
-                          enableTpm2 = false;
+                          tpm2.enable = false;
                           network.wait-online.enable = true;
                         };
                       };
                       kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+                      supportedFilesystems = {
+                        btrfs = lib.mkForce false;
+                        cifs = lib.mkForce false;
+                        ext3 = lib.mkForce false;
+                        f2fs = lib.mkForce false;
+                        ntfs3 = lib.mkForce false;
+                        xfs = lib.mkForce false;
+                        zfs = lib.mkForce false;
+                      };
                       swraid.enable = lib.mkForce false;
                     };
 
@@ -93,7 +102,7 @@
                     hardware = {
                       enableRedistributableFirmware = true;
                       bluetooth.enable = false;
-                      pulseaudio.enable = false;
+                      graphics.enable = true;
                     };
 
                     # Networking
@@ -109,7 +118,6 @@
                     # Programs
                     programs = {
                       firefox.enable = true;
-                      light.enable = true;
                       nano.enable = false;
                     };
 
@@ -125,11 +133,11 @@
                       lvm.enable = false;
                       openssh.enable = lib.mkForce false;
                       pipewire.enable = false;
+                      pulseaudio.enable = false;
                       rsyslogd.enable = false;
                       syslog-ng.enable = false;
                       udisks2.enable = false;
                       xserver.enable = false;
-                      zfs.trim.enable = lib.mkForce false;
                     };
 
                     # Users
@@ -165,7 +173,7 @@
                     security = {
                       pam.services.su.forwardXAuth = lib.mkForce false;
                       sudo.enable = lib.mkForce false;
-                      tpm2.applyUdevRules = false;
+                      tpm2.enable = false;
                     };
 
                     # System
@@ -182,13 +190,14 @@
                       network.enable = true;
                       oomd.enable = false;
                       services.systemd-journal-flush.enable = false;
+                      tpm2.enable = false;
                       # Set screen brightness to maximum
                       user.services.brightness = {
                         enable = true;
                         description = "Set Maximum Screen Brightness";
                         serviceConfig = {
                           PassEnvironment = "DISPLAY";
-                          ExecStart = "${pkgs.light}/bin/light -S 100";
+                          ExecStart = "${pkgs.brightnessctl}/bin/brightnessctl set 100%";
                         };
                         wantedBy = [ "graphical.target" ];
                       };
@@ -217,7 +226,6 @@
           devenv.shells.default =
             { config, pkgs, ... }:
             {
-              dotenv.enable = true;
               scripts = {
                 build-image = {
                   exec = ''
