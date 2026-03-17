@@ -20,8 +20,8 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
 - **Experimental**: This project is still in its early stages. Expect bugs and breaking changes.
 - **Firefox**: The kiosk is currently limited to Firefox. Support for other browsers may be added in the future.
 - **Hardware**: The kiosk is currently limited to x86_64 hardware. Support for other architectures may be added in the future.
-- **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require an flake update, rebuild, and redeployment. This may change in the future.
-- **Quirky**: This flake-based project uses a non-standard method for secrets management (see build.sh). This may change in the future.
+- **Static**: The OS, as it stands, is persistent and non-upgradable. Software updates require a flake update, rebuild, and redeployment. This may change in the future.
+- **Quirky**: This flake-based project uses a non-standard method for secrets management (see `build.sh`). This may change in the future.
 - **Bloated**: Although every attempt has been made at minimalism, the resulting ISO image is still quite large for what it does (~1.6GB). More work is needed to reduce the image size.
 
 PRs welcome to address any of these caveats!
@@ -78,10 +78,11 @@ To deploy the kiosk:
 
 ## Customization
 
-You can further customize the kiosk by editing `kiosk.nix` and `disable.nix` files:
+All kiosk configuration lives in `flake.nix`. Edit the NixOS module within it to adjust:
 
-- `kiosk.nix`: Define the kiosk's behavior, appearance, and additional settings.
-- `disable.nix`: Adjust disabled features or services to suit your security or performance needs.
+- Kiosk behavior (browser, start page, screen brightness)
+- Disabled features and services (for security and minimal footprint)
+- ISO image settings (compression, bootability)
 
 ## Contributing
 
