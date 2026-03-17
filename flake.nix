@@ -63,10 +63,11 @@
                     # ISO image
                     image.baseName = lib.mkForce "kiosk";
                     isoImage = {
-                      volumeID = "KIOSK";
-                      squashfsCompression = "xz";
+                      compressImage = true;
                       makeEfiBootable = true;
                       makeUsbBootable = true;
+                      squashfsCompression = "xz";
+                      volumeID = "KIOSK";
                     };
 
                     # Boot
@@ -85,7 +86,7 @@
                           network.wait-online.enable = true;
                         };
                       };
-                      kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+                      kernelPackages = pkgs.linuxPackages_latest;
                       supportedFilesystems = {
                         btrfs = lib.mkForce false;
                         cifs = lib.mkForce false;
@@ -160,15 +161,6 @@
                     # Fonts
                     fonts.fontconfig.enable = false;
 
-                    # Overlays
-                    nixpkgs.overlays = [
-                      (final: super: {
-                        zfs = super.zfs.overrideAttrs (_: {
-                          meta.platforms = [ ];
-                        });
-                      })
-                    ];
-
                     # Security
                     security = {
                       pam.services.su.forwardXAuth = lib.mkForce false;
@@ -180,7 +172,7 @@
                     system = {
                       extraDependencies = lib.mkForce [ ];
                       nssModules = lib.mkForce [ ];
-                      stateVersion = "24.11";
+                      stateVersion = "25.11";
                       switch.enable = false;
                     };
 
@@ -227,12 +219,16 @@
             { config, pkgs, ... }:
             {
               scripts = {
-                build-image = {
+                build = {
                   exec = ''
                     #!/usr/bin/env bash
                     nix build --impure
                   '';
                   description = "Build the ISO image";
+                };
+                setup = {
+                  exec = builtins.readFile ./setup.sh;
+                  description = "Interactive setup wizard for the kiosk";
                 };
               };
             };
