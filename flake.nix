@@ -63,7 +63,7 @@
                     # ISO image
                     image.baseName = lib.mkForce "kiosk";
                     isoImage = {
-                      compressImage = true;
+                      compressImage = false;
                       makeEfiBootable = true;
                       makeUsbBootable = true;
                       squashfsCompression = "xz";
