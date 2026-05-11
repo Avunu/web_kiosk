@@ -81,11 +81,21 @@
                     boot = {
                       initrd = {
                         kernelModules = [
+                          # Device mapper (for squashfs overlay)
                           "dm-mod"
+                          # Filesystems
                           "squashfs"
                           "iso9660"
-                          "uas"
                           "overlay"
+                          # USB host controllers
+                          "xhci_hcd"
+                          "ehci_hcd"
+                          "ohci_hcd"
+                          # USB storage
+                          "uas"
+                          "usb-storage"
+                          # SATA/AHCI
+                          "ahci"
                         ];
                         includeDefaultModules = false;
                         services.lvm.enable = false;
