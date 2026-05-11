@@ -81,6 +81,7 @@
                     boot = {
                       initrd = {
                         kernelModules = [
+                          "dm-mod"
                           "squashfs"
                           "iso9660"
                           "uas"
