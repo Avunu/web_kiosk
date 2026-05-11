@@ -105,7 +105,7 @@
                           "ata_piix"
                           "ata_generic"
                         ];
-                        includeDefaultModules = false;
+                        includeDefaultModules = true;
                         services.lvm.enable = false;
                         systemd = {
                           enable = true;
