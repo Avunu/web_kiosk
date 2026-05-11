@@ -79,6 +79,7 @@
 
                     # Boot
                     boot = {
+                      kernelParams = [ "console=ttyS0,115200n8" ];
                       initrd = {
                         kernelModules = [
                           # Device mapper (for squashfs overlay)
@@ -99,10 +100,15 @@
                           "usb-storage"
                           # SATA/AHCI
                           "ahci"
+                          # CDROM / IDE (for optical media and QEMU)
+                          "sr_mod"
+                          "ata_piix"
+                          "ata_generic"
                         ];
                         includeDefaultModules = false;
                         services.lvm.enable = false;
                         systemd = {
+                          enable = true;
                           tpm2.enable = false;
                           network.wait-online.enable = true;
                         };
@@ -175,6 +181,10 @@
               kioskModule = ./modules/kiosk.nix;
               startPage = if startPage != "" then startPage else "https://www.google.com";
               timeZone = if timeZone != "" then timeZone else "America/New_York";
+            };
+            kiosk-iso-boot = import ./tests/kiosk-iso-boot.nix {
+              inherit pkgs;
+              isoImage = config.packages.default;
             };
           };
 
