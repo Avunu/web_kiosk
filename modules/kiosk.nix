@@ -19,9 +19,6 @@
   };
 
   config = {
-    # use the latest kernel by default
-    boot.kernelPackages = pkgs.linuxPackages_latest;
-
     # Hardware
     hardware.graphics.enable = true;
 
