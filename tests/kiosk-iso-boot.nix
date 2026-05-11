@@ -34,7 +34,7 @@ pkgs.testers.runNixOSTest {
     # The kernel has console=ttyS0,115200n8 so serial output is available.
 
     # Wait for cage kiosk service to start
-    machine.wait_for_console_text("Started cage-tty1.service", timeout=300)
+    machine.wait_for_console_text("[  OK  ] Started cage-tty1.service", timeout=300)
 
     # Give Firefox time to launch inside cage
     import time
