@@ -87,10 +87,13 @@
                           "squashfs"
                           "iso9660"
                           "overlay"
-                          # USB host controllers
+                          # USB host controllers (+ PCI bindings)
                           "xhci_hcd"
+                          "xhci_pci"
                           "ehci_hcd"
+                          "ehci_pci"
                           "ohci_hcd"
+                          "ohci_pci"
                           # USB storage
                           "uas"
                           "usb-storage"
