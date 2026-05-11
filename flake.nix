@@ -52,6 +52,7 @@
               inherit system;
               modules = [
                 "${nixpkgs}/nixos/modules/installer/cd-dvd/iso-image.nix"
+                ./modules/kiosk.nix
                 (
                   { lib, pkgs, ... }:
                   {
@@ -59,6 +60,12 @@
                       "${nixpkgs}/nixos/modules/profiles/all-hardware.nix"
                       "${nixpkgs}/nixos/modules/profiles/base.nix"
                     ];
+
+                    # Kiosk options
+                    kiosk = {
+                      startPage = if startPage != "" then startPage else "https://www.google.com";
+                      timeZone = if timeZone != "" then timeZone else "America/New_York";
+                    };
 
                     # ISO image
                     image.baseName = lib.mkForce "kiosk";
@@ -103,7 +110,6 @@
                     hardware = {
                       enableRedistributableFirmware = true;
                       bluetooth.enable = false;
-                      graphics.enable = true;
                     };
 
                     # Networking
@@ -116,104 +122,30 @@
                       };
                     };
 
-                    # Programs
-                    programs = {
-                      firefox.enable = true;
-                      nano.enable = false;
-                    };
-
-                    # Services
-                    services = {
-                      cage = {
-                        enable = true;
-                        program = "${pkgs.firefox}/bin/firefox -kiosk ${startPage}";
-                        user = "kiosk";
-                      };
-                      getty.loginProgram = "${pkgs.coreutils}/bin/true";
-                      logrotate.enable = lib.mkForce false;
-                      lvm.enable = false;
-                      openssh.enable = lib.mkForce false;
-                      pipewire.enable = false;
-                      pulseaudio.enable = false;
-                      rsyslogd.enable = false;
-                      syslog-ng.enable = false;
-                      udisks2.enable = false;
-                      xserver.enable = false;
-                    };
-
-                    # Users
-                    users.users.kiosk.isNormalUser = true;
-
-                    # Documentation
-                    documentation = {
-                      doc.enable = false;
-                      info.enable = false;
-                      man.enable = false;
-                      nixos.enable = false;
-                    };
-
-                    # Environment
-                    environment = {
-                      defaultPackages = [ ];
-                      systemPackages = [ ];
-                    };
-
-                    # Fonts
-                    fonts.fontconfig.enable = false;
-
-                    # Security
-                    security = {
-                      pam.services.su.forwardXAuth = lib.mkForce false;
-                      sudo.enable = lib.mkForce false;
-                      tpm2.enable = false;
-                    };
-
                     # System
                     system = {
                       extraDependencies = lib.mkForce [ ];
                       nssModules = lib.mkForce [ ];
-                      stateVersion = "25.11";
                       switch.enable = false;
                     };
 
                     # Systemd
                     systemd = {
-                      coredump.enable = false;
                       network.enable = true;
-                      oomd.enable = false;
-                      services.systemd-journal-flush.enable = false;
-                      tpm2.enable = false;
-                      # Set screen brightness to maximum
-                      user.services.brightness = {
-                        enable = true;
-                        description = "Set Maximum Screen Brightness";
-                        serviceConfig = {
-                          PassEnvironment = "DISPLAY";
-                          ExecStart = "${pkgs.brightnessctl}/bin/brightnessctl set 100%";
-                        };
-                        wantedBy = [ "graphical.target" ];
-                      };
                     };
-
-                    # Time
-                    time.timeZone = timeZone;
-
-                    # XDG
-                    xdg = {
-                      autostart.enable = false;
-                      icons.enable = false;
-                      menus.enable = false;
-                      mime.enable = false;
-                      portal.enable = false;
-                      sounds.enable = false;
-                    };
-
-                    # Swap
-                    zramSwap.enable = true;
                   }
                 )
               ];
             }).config.system.build.isoImage;
+
+          checks = lib.optionalAttrs pkgs.stdenv.isLinux {
+            kiosk = import ./tests/kiosk.nix {
+              inherit pkgs;
+              kioskModule = ./modules/kiosk.nix;
+              startPage = if startPage != "" then startPage else "https://www.google.com";
+              timeZone = if timeZone != "" then timeZone else "America/New_York";
+            };
+          };
 
           devenv.shells.default =
             { config, pkgs, ... }:
