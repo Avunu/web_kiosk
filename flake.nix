@@ -122,6 +122,23 @@
                       };
                     };
 
+                    # Documentation
+                    documentation = {
+                      doc.enable = false;
+                      info.enable = false;
+                      man.enable = false;
+                      nixos.enable = false;
+                    };
+
+                    # Environment
+                    environment = {
+                      defaultPackages = [ ];
+                      systemPackages = [ ];
+                    };
+
+                    # Fonts
+                    fonts.fontconfig.enable = false;
+
                     # System
                     system = {
                       extraDependencies = lib.mkForce [ ];

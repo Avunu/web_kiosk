@@ -19,6 +19,9 @@
   };
 
   config = {
+    # use the latest kernel by default
+    boot.kernelPackages = pkgs.linuxPackages_latest;
+
     # Hardware
     hardware.graphics.enable = true;
 
@@ -49,23 +52,6 @@
 
     # Users
     users.users.kiosk.isNormalUser = true;
-
-    # Documentation
-    documentation = {
-      doc.enable = false;
-      info.enable = false;
-      man.enable = false;
-      nixos.enable = false;
-    };
-
-    # Environment
-    environment = {
-      defaultPackages = [ ];
-      systemPackages = [ ];
-    };
-
-    # Fonts
-    fonts.fontconfig.enable = false;
 
     # Security
     security = {
