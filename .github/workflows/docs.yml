@@ -1,0 +1,26 @@
+name: Docs
+
+# Checks the documentation on every pull request that touches it. The work is done by the shared
+# workflow of Avunu/docusystem, pinned to a commit (Dependabot's github-actions entry moves the pin).
+# Nothing here can publish: the token is read-only. Publishing is docs-publish.yml.
+on:
+  pull_request:
+    paths:
+      - docs/**
+      - docs-site/**
+      - .github/workflows/docs.yml
+      - .github/workflows/docs-publish.yml
+
+permissions: {}
+
+concurrency:
+  group: docs-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    permissions:
+      contents: read # checkout
+    uses: Avunu/docusystem/.github/workflows/docs-build.yml@5f97ba8d997b882044ad6d6e7c66dca9194a8422 # v0.1.0
+    with:
+      site-directory: docs-site
