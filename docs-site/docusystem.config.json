@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/@avunu/docusystem/config.schema.json",
+  "name": "Web Kiosk",
+  "tagline": "A USB-booting NixOS image that turns an x86 computer into a locked-down Firefox kiosk for a single web page.",
+  "slug": "web_kiosk",
+  "platform": "nixos",
+  "repo": "https://github.com/Avunu/web_kiosk",
+  "domain": "web-kiosk.avunu.net",
+  "license": "MIT"
+}

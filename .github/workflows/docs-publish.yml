@@ -1,0 +1,32 @@
+name: Docs publish
+
+# Builds the documentation on the default branch and publishes it to GitHub Pages once a maintainer
+# has set the repository variable DOCS_SITE_ENABLED to true (until then it only builds and checks).
+# Runs on push and by hand, never on a pull request, so it never sees a pull request's token.
+on:
+  push:
+    paths:
+      - docs/**
+      - docs-site/**
+      - .github/workflows/docs.yml
+      - .github/workflows/docs-publish.yml
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  build:
+    permissions:
+      contents: read # checkout
+    uses: Avunu/docusystem/.github/workflows/docs-build.yml@5f97ba8d997b882044ad6d6e7c66dca9194a8422 # v0.1.0
+    with:
+      site-directory: docs-site
+      pages-artifact: ${{ vars.DOCS_SITE_ENABLED == 'true' }}
+
+  deploy:
+    needs: build
+    if: ${{ vars.DOCS_SITE_ENABLED == 'true' }}
+    permissions:
+      pages: write # publish the artifact
+      id-token: write # prove to Pages that this run made it
+    uses: Avunu/docusystem/.github/workflows/docs-deploy.yml@5f97ba8d997b882044ad6d6e7c66dca9194a8422 # v0.1.0

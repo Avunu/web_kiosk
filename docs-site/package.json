@@ -1,0 +1,13 @@
+{
+  "name": "web-kiosk-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "docusystem dev",
+    "build": "docusystem build",
+    "check": "docusystem check"
+  },
+  "dependencies": {
+    "@avunu/docusystem": "^0.1.0"
+  }
+}

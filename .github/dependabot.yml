@@ -1,0 +1,34 @@
+version: 2
+updates:
+  # The documentation site (docs-site/): @avunu/docusystem and the packages it brings. A person reviews
+  # these pull requests: a merge to the default branch publishes the site (see the auto-merge workflow, if any).
+  - package-ecosystem: npm
+    directory: /docs-site
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+      exclude:
+        - "@avunu/docusystem"
+    groups:
+      docs-site-packages:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore
+
+  # The pinned commit of the shared documentation workflows in .github/workflows/docs*.yml. A person
+  # reviews these pull requests too: a merge to the default branch publishes the site with the new
+  # workflow code (see the auto-merge workflow, if any).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+      exclude:
+        - Avunu/docusystem
+    groups:
+      docs-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
