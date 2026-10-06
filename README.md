@@ -6,7 +6,7 @@ This project provides a customizable and easy-to-deploy Firefox web kiosk powere
 
 * **Firefox Kiosk**: Uses the native Firefox kiosk mode to provide an isolated browsing experience at your selected URL.
 * **USB Key**: Deploy the OS with an easy-to-build image on a thumb drive attached to the target system.
-* **WiFi**: Bake your wireless credentials into the image for auto-connection to your network.
+* **WiFi**: Bake your wireless credentials into the image for auto-connection to your network (see the security note under [Configure Environment Variables](#setup)).
 
 ## Benefits
 
@@ -35,43 +35,58 @@ PRs welcome to address any of these caveats!
 
 1. **Clone the Repository**
 
-   ```Shell
+   ```shell
    git clone https://github.com/Avunu/web_kiosk.git
    cd web_kiosk
    ```
 
 2. **Configure Environment Variables**
 
-   Create a `.env` file in the project root with your custom configuration.
+   The build reads its settings from a local `.env` file in the project root. Create it in one of two ways:
 
-   Run the `setup.sh` script to set your parameters in the local `.env` file.
+   * Run the interactive setup wizard (`./setup.sh`, or `setup` once you are inside the development shell from step 3). It prompts for each value, writes `.env`, and offers to build the image.
+   * Copy `.env.example` to `.env` and edit it:
 
-   Alternatively, copy and use `.env.example` as a template:
+     ```shell
+     cp .env.example .env
+     ```
 
-   ```Shell
+   The file contains one `KEY=value` pair per line:
+
+   ```dotenv
    START_PAGE=https://www.google.com
    TIME_ZONE=America/New_York
    WIFI_SSID=YourWifiSSID
    WIFI_PASSWORD=YourWifiPassword
    ```
 
+   | Variable        | Purpose                                                   | Default if empty         |
+   | --------------- | --------------------------------------------------------- | ------------------------ |
+   | `START_PAGE`    | URL Firefox opens in kiosk mode                           | `https://www.google.com` |
+   | `TIME_ZONE`     | Time zone of the kiosk (see `timedatectl list-timezones`) | `America/New_York`       |
+   | `WIFI_SSID`     | Wi-Fi network to join                                     | Wi-Fi disabled           |
+   | `WIFI_PASSWORD` | Wi-Fi passphrase                                          | none                     |
+
    Set `WIFI_SSID` and `WIFI_PASSWORD` to empty strings to disable Wi-Fi.
+
+   > [!WARNING]
+   > Wi-Fi credentials are baked into the image in plain text, and the Nix build reads them from your environment. Treat the resulting ISO as sensitive, do not share it, and never commit your `.env` file (it is already in `.gitignore`).
 
 3. **Enter the Development Shell**
 
-   ```Shell
+   ```shell
    direnv allow
    ```
 
-   This activates the devenv shell which loads `.env` variables into the environment.
+   This activates the devenv shell, which loads the `.env` variables into the environment and provides the `build` and `setup` commands.
 
 4. **Build the Kiosk**
 
-   ```Shell
+   ```shell
    build
    ```
 
-   This will generate an ISO image that you can use to boot your kiosk system. The image will be located in the `result/iso/` directory.
+   This runs `nix build --impure` (impure evaluation is required so the flake can read your environment variables) and generates an ISO image that you can use to boot your kiosk system. The image is written to the `result/iso/` directory as `kiosk.iso`.
 
 ### Deployment
 
@@ -83,11 +98,19 @@ To deploy the kiosk:
 
 ## Customization
 
-All kiosk configuration lives in `flake.nix`. Edit the NixOS module within it to adjust:
+Day-to-day settings (start page, time zone, Wi-Fi) come from `.env`, as described above. For anything deeper, edit the NixOS configuration:
 
-* Kiosk behavior (browser, start page, screen brightness)
-* Disabled features and services (for security and minimal footprint)
-* ISO image settings (compression, bootability)
+* `modules/kiosk.nix` is the kiosk module. It defines the `kiosk.startPage` and `kiosk.timeZone` options and configures Firefox under the `cage` Wayland compositor, screen brightness, and the disabled services and features that keep the system minimal and locked down.
+* `flake.nix` assembles the ISO image: boot and initrd modules, ISO settings (compression, BIOS and EFI bootability), networking, and the development shell.
+
+## Testing
+
+On Linux, `nix flake check` runs the NixOS VM tests in `tests/` (add `--impure` to test with the values from your `.env` instead of the defaults):
+
+* `kiosk` boots the kiosk module in a VM and checks that the `cage` service and Firefox start, and that the `kiosk` user has no `sudo` or `wheel` access.
+* `kiosk-iso-boot` boots the built ISO from a virtual CD-ROM and waits for the kiosk service to start on the serial console.
+
+Both tests build a full image or VM, so expect them to take a while. There is no CI workflow in this repository yet.
 
 ## Contributing
 
