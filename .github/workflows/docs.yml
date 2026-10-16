@@ -21,6 +21,6 @@ jobs:
   docs:
     permissions:
       contents: read # checkout
-    uses: Avunu/site-docs/.github/workflows/check-docs.yml@232c6b6116cbab524078044fa3a613d88e2cd6c3 # 2026-10-16
+    uses: Avunu/site-docs/.github/workflows/check-docs.yml@78a163ddf26ddb17aaf36a71f56415d42cb14b99 # 2026-10-16
     with:
       path: web-kiosk
