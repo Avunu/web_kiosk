@@ -1,15 +1,15 @@
 name: Docs
 
-# Checks the documentation on every pull request that touches it. The work is done by the shared
-# workflow of Avunu/docusystem, pinned to a commit (Dependabot's github-actions entry moves the pin).
-# Nothing here can publish: the token is read-only. Publishing is docs-publish.yml.
+# Checks the documentation on every pull request that touches it, exactly as the one site
+# (https://docs.avunu.net/web-kiosk/) will build it, links to the other projects included. The work is
+# done by the shared workflow of Avunu/site-docs, pinned to a commit: the tool moves with the pin.
+# Nothing here can publish: the token is read-only and there is no secret. After a release,
+# Avunu/site-docs picks the documentation up by itself.
 on:
   pull_request:
     paths:
       - docs/**
-      - docs-site/**
       - .github/workflows/docs.yml
-      - .github/workflows/docs-publish.yml
 
 permissions: {}
 
@@ -18,9 +18,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  docs:
     permissions:
       contents: read # checkout
-    uses: Avunu/docusystem/.github/workflows/docs-build.yml@5f97ba8d997b882044ad6d6e7c66dca9194a8422 # v0.1.0
+    uses: Avunu/site-docs/.github/workflows/check-docs.yml@232c6b6116cbab524078044fa3a613d88e2cd6c3 # 2026-10-16
     with:
-      site-directory: docs-site
+      path: web-kiosk
