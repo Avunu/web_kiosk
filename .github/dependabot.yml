@@ -16,3 +16,17 @@ updates:
         patterns: ["*"]
     commit-message:
       prefix: ci
+  # The flake inputs locked in flake.lock (nixpkgs, devenv, flake-parts).
+  - package-ecosystem: nix
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    labels:
+      - dependencies
+    groups:
+      nix-inputs:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
