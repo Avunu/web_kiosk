@@ -1,6 +1,18 @@
+---
+title: NixOS Firefox Web Kiosk
+description: "A customizable Firefox kiosk on NixOS that boots from a USB drive straight into one URL, with WiFi baked in."
+nav_title: Overview
+order: 0
+tags: [overview, kiosk]
+updated: 2026-11-24
+---
+
 # NixOS Firefox Web Kiosk
 
 This project provides a customizable and easy-to-deploy Firefox web kiosk powered by NixOS, the purely functional Linux distribution. It's ideal for setting up a secure, minimal, and dedicated web browsing environment.
+
+> [!TIP]
+> Building the image, writing it to a USB drive and troubleshooting a kiosk are covered step by step. See [Getting started](getting-started.md).
 
 ## Features
 
@@ -53,7 +65,7 @@ PRs welcome to address any of these caveats!
 
    The file contains one `KEY=value` pair per line:
 
-   ```dotenv
+   ```ini
    START_PAGE=https://www.google.com
    TIME_ZONE=America/New_York
    WIFI_SSID=YourWifiSSID
